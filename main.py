@@ -1,10 +1,8 @@
-from cgitb import text
 import math
 from tkinter import *
 from datetime import datetime
 import datetime as dt
 from tkinter.ttk import Labelframe
-from turtle import left
 from tkinter import ttk
 
 
@@ -55,7 +53,8 @@ def CalcPrice(ButtonNum): # Calculatin Total Price
     time = (int(h) * 3600) + (int(m) * 60) + (int(s))
     print((math.ceil(time/60)*int(price))/60)
 
-
+def clear(data):
+    TextBoxList[data].delete(1.0,END)
 
 # Create A Main Frame
 main_frame = Frame(root)
@@ -82,12 +81,20 @@ second_frame = Frame(my_canvas)
 # Addd that new frame to window in the Canvas
 my_canvas.create_window((0,0), window=second_frame, anchor="nw")
 
-data = 15
+data = 5
 frameList = [] # Creating Frame
+j = 0
+k = 0
 for i in range(1,data + 1):
     Sit1 = Labelframe(second_frame,text=f"دستگاه شماره {i}")
-    Sit1.grid(row=i,column=0)
+    Sit1.grid(row=k,column=j, padx= 10)
     frameList.append(Sit1)
+    j += 1
+    if j == 3:
+        j = 0
+        k += 1
+    if k == 3:
+        k =0
 
 StartTimeLables = []
 
@@ -105,33 +112,37 @@ TotalPlayedTime = []
 
 global PriceInput
 PriceInput = []
+
+global TextboxList
+TextBoxList = []
+
 i = 0
 for framename, lblnames in zip(frameList, StartTimeLables):
     myButton = Button(framename, text="Start", padx=50 , pady=10, command=lambda mydata = i: InsertTime(mydata)).grid(row=0, column=0)
     mybutton = Button(framename, text="Stop", padx=50, pady=10, command= lambda mydata = i:InsertStopTime(mydata) ).grid(row=0, column=1)
     mybutt = Button(framename,text="Calc", padx=50,pady=10, command=lambda mydata = i:CalcPrice(mydata)).grid(row=0,column=2)
-    i = i + 1
+    
 
     global temp
     temp = lblnames
-    temp = Label(framename, text=f"Hi")
+    temp = Label(framename, text="")
     temp.grid(row=1,column=1)
     objlbllist.append(temp)
 
     global temp2
     temp2 = lblnames
-    temp2 = Label(framename, text=f"hi")
+    temp2 = Label(framename, text="")
     temp2.grid(row=2, column=1)
     objectLablelsForStopTime.append(temp2)
 
     global PlayedTimeLabel
     PlayedTimeLabel = lblnames
-    PlayedTimeLabel = Label(framename,text=f"{PlayedTimeLabel}")
+    PlayedTimeLabel = Label(framename,text="")
     PlayedTimeLabel.grid(row=3,column=1)
     TotalPlayedTime.append(PlayedTimeLabel)
 
     e = Entry(framename ,width=15)
-    e.grid(row=4,column=1)
+    e.grid(row=4,column=1, pady= 10)
     PriceInput.append(e)
 
 
@@ -139,6 +150,13 @@ for framename, lblnames in zip(frameList, StartTimeLables):
     lable_title = Label(framename, text="زمان اتمام بازی").grid(row=2,column=0)
     lable_title = Label(framename, text="کل زمان بازی شده").grid(row=3,column=0)
     lable_title = Label(framename, text='قیمت').grid(row=4,column=0)
+
+    TextBox = Text(framename, width=30,height=15,font=('Helvetica', 10))
+    TextBox.grid(row=5, column=0, columnspan=5)
+    TextBoxList.append(TextBox)
+    clear_button = Button(framename, text="CLEAR BOX", command= lambda mydata = i:clear(mydata))
+    clear_button.grid(row=6,column=1,pady=10)
+    i += 1
 
 
 
