@@ -4,6 +4,12 @@ from tkinter import *
 from datetime import datetime
 import datetime as dt
 from tkinter.ttk import Labelframe
+from turtle import left
+from tkinter import ttk
+
+
+
+
 
 root = Tk()
 root.title('DARK') # Windows Title
@@ -50,14 +56,43 @@ def CalcPrice(ButtonNum): # Calculatin Total Price
     print((math.ceil(time/60)*int(price))/60)
 
 
+
+# Create A Main Frame
+main_frame = Frame(root)
+main_frame.pack(fill=BOTH, expand=1)
+
+# Create A Canvas
+my_canvas = Canvas(main_frame)
+my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+
+
+# Add A Scrollbar
+my_scrollbar = ttk.Scrollbar(main_frame,orient=VERTICAL, command=my_canvas.yview)
+my_scrollbar.pack(side=RIGHT,fill=Y)
+
+# Configure The Canvas
+my_canvas.configure(yscrollcommand=my_scrollbar.set)
+my_canvas.bind('<Configure>', lambda e :my_canvas.configure(scrollregion=my_canvas.bbox('all')))
+# Add MouseWheel Even to the Root to scroll with Mouse Togel
+root.bind_all('<MouseWheel>',lambda e : my_canvas.yview_scroll(-1*int((e.delta/120)),"units"))
+
+# Crreate ANOTHER frame in Canvas
+second_frame = Frame(my_canvas)
+
+# Addd that new frame to window in the Canvas
+my_canvas.create_window((0,0), window=second_frame, anchor="nw")
+
+data = 15
 frameList = [] # Creating Frame
-for i in range(0,8):
-    Sit1 = Labelframe(root,text=f"دستگاه شماره {i}")
+for i in range(1,data + 1):
+    Sit1 = Labelframe(second_frame,text=f"دستگاه شماره {i}")
     Sit1.grid(row=i,column=0)
     frameList.append(Sit1)
 
+StartTimeLables = []
 
-StartTimeLables = ['lbl1', 'lbl2', 'lbl3']
+for i in range(1,data + 1):
+    StartTimeLables.append('lbl'+ str(i))
 
 global objectLablelsForStopTime # List of Label Objects
 objectLablelsForStopTime = []
@@ -79,13 +114,13 @@ for framename, lblnames in zip(frameList, StartTimeLables):
 
     global temp
     temp = lblnames
-    temp = Label(framename, text=f"Hi {temp}")
+    temp = Label(framename, text=f"Hi")
     temp.grid(row=1,column=1)
     objlbllist.append(temp)
 
     global temp2
     temp2 = lblnames
-    temp2 = Label(framename, text=f"hi {temp2}")
+    temp2 = Label(framename, text=f"hi")
     temp2.grid(row=2, column=1)
     objectLablelsForStopTime.append(temp2)
 
