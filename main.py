@@ -1,9 +1,10 @@
+from cgitb import text
 import math
 from tkinter import *
 from datetime import datetime
 import datetime as dt
 from tkinter.ttk import Labelframe
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 
 
@@ -27,13 +28,19 @@ def setTime(Time, lbl): # set Time in Specific label
 def InsertTime(lbl): # in here we Specific the label to inser the Start Time Data
     Time = GetCurrentTime()
     setTime(Time, objlbllist[int(lbl)])
+    objectLablelsForStopTime[lbl].config(text='')
+    TotalPlayedTime[lbl].config(text='')
     
 def InsertStopTime(lbl): # here we Specific  the lable to Insert the Stop Time data
     Time = GetCurrentTime()
-    setTime(Time,objectLablelsForStopTime[int(lbl)])
-    plytime = PlayedTime(objlbllist[int(lbl)],objectLablelsForStopTime[int(lbl)])
-    totalLabel = TotalPlayedTime[int(lbl)]
-    totalLabel.config(text=str(plytime))
+    LableLenStopTime = len(objlbllist[int(lbl)].cget('text'))
+    if int(LableLenStopTime) == 0:
+        messagebox.showwarning('Hi','Set start and Stop Time First')
+    else:
+        setTime(Time,objectLablelsForStopTime[int(lbl)])
+        plytime = PlayedTime(objlbllist[int(lbl)],objectLablelsForStopTime[int(lbl)])
+        totalLabel = TotalPlayedTime[int(lbl)]
+        totalLabel.config(text=str(plytime))
 
 
 def PlayedTime(lblstart,lblstop): # calculationg the Total Time that player Played
@@ -48,13 +55,37 @@ def PlayedTime(lblstart,lblstop): # calculationg the Total Time that player Play
 
 def CalcPrice(ButtonNum): # Calculatin Total Price 
     price = PriceInput[ButtonNum].get()
-    Time = TotalPlayedTime[ButtonNum].cget('text')
-    h,m,s = Time.split(':')
-    time = (int(h) * 3600) + (int(m) * 60) + (int(s))
-    print((math.ceil(time/60)*int(price))/60)
+    if price.isnumeric():
+        if len(price) <= 1:
+            messagebox.showwarning('Hi', 'Enter Price First')
+        else:
+                if len(TotalPlayedTime[ButtonNum].cget('text')) < 1:
+                    messagebox.showwarning('Hi','Click Start First')
+                    PriceInput[ButtonNum].delete(0,END)
+                else:
+                    Time = TotalPlayedTime[ButtonNum].cget('text')
+                    h,m,s = Time.split(':')
+                    time = (int(h) * 3600) + (int(m) * 60) + (int(s))
+                    #print((math.ceil(time/60)*int(price))/60)
+    else:
+        messagebox.showwarning('Hi', 'Enter integer value')
+        PriceInput[ButtonNum].delete(0,END)
+
+
+
 
 def clear(data):
-    TextBoxList[data].delete(1.0,END)
+    if len(TextBoxList[data].get(1.0, END)) <= 1:
+        messagebox.showwarning('Hi', 'The Box Is Already Empty!!!')
+    else:
+        TextBoxList[data].delete(1.0,END)
+
+def Reset(ButtonNumber):
+    objlbllist[ButtonNumber].config(text='')
+    objectLablelsForStopTime[ButtonNumber].config(text='')
+    TotalPlayedTime[ButtonNumber].config(text='')
+    PriceInput[ButtonNumber].delete(0,END)
+    TextBoxList[ButtonNumber].delete(1.0,END)
 
 # Create A Main Frame
 main_frame = Frame(root)
@@ -118,30 +149,31 @@ TextBoxList = []
 
 i = 0
 for framename, lblnames in zip(frameList, StartTimeLables):
-    myButton = Button(framename, text="Start", padx=50 , pady=10, command=lambda mydata = i: InsertTime(mydata)).grid(row=0, column=0)
-    mybutton = Button(framename, text="Stop", padx=50, pady=10, command= lambda mydata = i:InsertStopTime(mydata) ).grid(row=0, column=1)
-    mybutt = Button(framename,text="Calc", padx=50,pady=10, command=lambda mydata = i:CalcPrice(mydata)).grid(row=0,column=2)
+    StartButton = Button(framename, text="Start", padx=30 , pady=10, command=lambda mydata = i: InsertTime(mydata)).grid(row=0, column=0)
+    StopButton = Button(framename, text="Stop", padx=30, pady=10, command= lambda mydata = i:InsertStopTime(mydata) ).grid(row=0, column=1)
+    CalcButoon = Button(framename,text="Calc", padx=30,pady=10, command=lambda mydata = i:CalcPrice(mydata)).grid(row=0,column=2)
+    ResetButton = Button(framename,text='Reset',padx=30,pady=10,command=lambda mydata = i:Reset(mydata)).grid(row=0,column=3)
     
 
-    global temp
+    global temp #temp for Defind Label 
     temp = lblnames
     temp = Label(framename, text="")
     temp.grid(row=1,column=1)
     objlbllist.append(temp)
 
-    global temp2
+    global temp2 # temp2 for Defind Label
     temp2 = lblnames
     temp2 = Label(framename, text="")
     temp2.grid(row=2, column=1)
     objectLablelsForStopTime.append(temp2)
 
-    global PlayedTimeLabel
+    global PlayedTimeLabel # Defind Label 
     PlayedTimeLabel = lblnames
     PlayedTimeLabel = Label(framename,text="")
     PlayedTimeLabel.grid(row=3,column=1)
     TotalPlayedTime.append(PlayedTimeLabel)
 
-    e = Entry(framename ,width=15)
+    e = Entry(framename ,width=15) # Entry for Price Value
     e.grid(row=4,column=1, pady= 10)
     PriceInput.append(e)
 
@@ -152,7 +184,7 @@ for framename, lblnames in zip(frameList, StartTimeLables):
     lable_title = Label(framename, text='قیمت').grid(row=4,column=0)
 
     TextBox = Text(framename, width=30,height=15,font=('Helvetica', 10))
-    TextBox.grid(row=5, column=0, columnspan=5)
+    TextBox.grid(row=5, column=0, columnspan=6)
     TextBoxList.append(TextBox)
     clear_button = Button(framename, text="CLEAR BOX", command= lambda mydata = i:clear(mydata))
     clear_button.grid(row=6,column=1,pady=10)
