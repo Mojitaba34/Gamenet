@@ -3,3 +3,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 _.swp
+README.md~
+.README.md.un~
