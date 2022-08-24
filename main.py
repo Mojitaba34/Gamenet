@@ -87,6 +87,26 @@ def Reset(ButtonNumber):
     PriceInput[ButtonNumber].delete(0,END)
     TextBoxList[ButtonNumber].delete(1.0,END)
 
+
+def inputdevice():
+    pass
+
+
+# Creatin Menu
+menu_section = Menu(root)
+root.config(menu=menu_section)
+
+FileMenu = Menu(menu_section)
+menu_section.add_cascade(label='File', menu=FileMenu)
+FileMenu.add_command(label='New...',command=inputdevice)
+FileMenu.add_separator()
+FileMenu.add_command(label='Exit', command=root.quit)
+
+
+
+
+
+
 # Create A Main Frame
 main_frame = Frame(root)
 main_frame.pack(fill=BOTH, expand=1)
