@@ -1,1 +1,1 @@
-[x] : Menu bar Done
+- [x] Menu bar Done
